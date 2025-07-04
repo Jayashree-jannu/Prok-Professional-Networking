@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from './api';
 
 const Signup: React.FC = () => {
@@ -9,6 +9,7 @@ const Signup: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +28,12 @@ const Signup: React.FC = () => {
     }
     setLoading(true);
     try {
-      await authApi.signup({ name, email, password });
-      // Handle successful signup (e.g., redirect, show success message)
+      const result = await authApi.signup({ username: name, email, password });
+      if (result && result.msg === 'User created') {
+        navigate('/login');
+      } else {
+        setError(result.msg || 'Signup failed.');
+      }
     } catch (err) {
       setError('Signup failed.');
     } finally {
@@ -44,28 +49,28 @@ const Signup: React.FC = () => {
           <div className="space-y-4">
             <input
               type="text"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring text-black bg-white"
               placeholder="Username"
               value={name}
               onChange={e => setName(e.target.value)}
             />
             <input
               type="email"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring text-black bg-white"
               placeholder="Email"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
             <input
               type="password"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring text-black bg-white"
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
             <input
               type="password"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring text-black bg-white"
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}

@@ -6,7 +6,7 @@ from .jobs import jobs_bp
 from .messaging import messaging_bp
 
 def register_blueprints(app):
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix='/api')
     app.register_blueprint(profile_bp)
     app.register_blueprint(posts_bp)
     app.register_blueprint(feed_bp)

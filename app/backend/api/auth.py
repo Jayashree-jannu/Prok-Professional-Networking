@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from app.backend.extensions import db, jwt, limiter
-from app.backend.models.user import User
+from ..extensions import db, jwt, limiter
+from ..models.user import User
 from flask_jwt_extended import create_access_token
 from passlib.hash import bcrypt
 import re
@@ -12,8 +12,7 @@ auth_bp = Blueprint('auth', __name__)
 # Password complexity regex: min 8 chars, 1 upper, 1 lower, 1 digit, 1 special
 PASSWORD_REGEX = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
 
-@auth_bp.route('/api/signup', methods=['POST'])
-@limiter.limit('5/minute')
+@auth_bp.route('/signup', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def signup():
     data = request.get_json()
@@ -40,20 +39,34 @@ def signup():
         return jsonify({'msg': 'Username or email already exists'}), 400
     return jsonify({'msg': 'User created'}), 201
 
-@auth_bp.route('/api/login', methods=['POST'])
-@limiter.limit('10/minute')
+@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def login():
     data = request.get_json()
     identifier = str(data.get('username', '') or data.get('email', '')).strip().lower()
     password = str(data.get('password', ''))
-    if not identifier or not password:
-        return jsonify({'msg': 'Missing credentials'}), 400
-    # Find user by username or email
+    print('Login attempt:')
+    print('  Received data:', data)
+    print('  Identifier:', identifier)
     user = User.query.filter((User.username==identifier)|(User.email==identifier)).first()
-    if not user or not bcrypt.verify(password, user.password_hash):
+    print('  User found:', user is not None)
+    if user:
+        print('  User.username:', user.username)
+        print('  User.email:', user.email)
+        print('  Password hash:', user.password_hash)
+        try:
+            password_check = bcrypt.verify(password, user.password_hash)
+        except Exception as e:
+            print('  Password check error:', e)
+            password_check = False
+        print('  Password check:', password_check)
+    else:
+        password_check = False
+    if not user or not password_check:
+        print('  Login failed: Invalid username/email or password')
         return jsonify({'msg': 'Invalid username/email or password'}), 401
     access_token = create_access_token(identity=user.id)
+    print('  Login successful!')
     return jsonify({'access_token': access_token, 'user': {'id': user.id, 'username': user.username, 'email': user.email}}), 200
 
 # Routes will be implemented here 

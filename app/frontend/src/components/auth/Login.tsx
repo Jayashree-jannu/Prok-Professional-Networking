@@ -1,64 +1,85 @@
 import React, { useState } from 'react';
+import { FiUser, FiLock } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { authApi } from './api';
+import { loginUser } from './api';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (!email || !password) {
-      setError('Please fill in all fields.');
-      return;
-    }
     setLoading(true);
+    setError(null);
+    setSuccess(false);
     try {
-      await authApi.login({ email, password });
-      // Handle successful login (e.g., redirect, set auth context)
+      // Use identifier as email or username for login
+      const payload: { username?: string; email?: string; password: string } = identifier.includes('@')
+        ? { email: identifier, password }
+        : { username: identifier, password };
+      const result = await loginUser(payload);
+      if (result && (result.token || result.access_token)) {
+        setSuccess(true);
+        // Optionally, save token to localStorage or context here
+      } else {
+        setError(result?.message || result?.msg || 'Invalid credentials');
+      }
     } catch (err) {
-      setError('Invalid credentials.');
-    } finally {
-      setLoading(false);
+      setError('Login failed. Please try again.');
     }
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <h2 className="text-3xl font-bold text-center text-gray-900">Login</h2>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-100">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-2xl border border-gray-100">
+        <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-6 tracking-tight drop-shadow-sm">Login</h2>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <input
-              type="email"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
-              placeholder="Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
-              placeholder="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <FiUser size={20} />
+              </span>
+              <input
+                type="text"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black bg-white placeholder-gray-400 transition-all shadow-sm hover:shadow-md"
+                placeholder="Username or Email"
+                value={identifier}
+                onChange={e => setIdentifier(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <FiLock size={20} />
+              </span>
+              <input
+                type="password"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black bg-white placeholder-gray-400 transition-all shadow-sm hover:shadow-md"
+                placeholder="Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+            </div>
           </div>
-          {error && <div className="text-red-500 text-sm">{error}</div>}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-md hover:from-blue-600 hover:to-purple-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
+          {error && <div className="text-red-500 text-center text-sm mt-2 animate-pulse">{error}</div>}
+          {success && <div className="text-green-600 text-center text-sm mt-2 animate-bounce">Login successful!</div>}
         </form>
         <div className="text-center text-sm mt-4">
-          Don&apos;t have an account?{' '}
-          <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
+          Don't have an account?{' '}
+          <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
         </div>
       </div>
     </div>

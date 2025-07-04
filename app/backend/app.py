@@ -1,9 +1,9 @@
 import os
 from flask import Flask
-from flask_cors import CORS
-from app.backend.config import Config
-from app.backend.extensions import db, migrate, jwt, limiter
-from app.backend.api import register_blueprints
+from flask_cors import CORS, cross_origin
+from .config import Config
+from .extensions import db, migrate, jwt, limiter
+from .api import register_blueprints
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -14,14 +14,19 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     jwt.init_app(app)
     limiter.init_app(app)
-    CORS(app, supports_credentials=True)
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
     # Register blueprints
     register_blueprints(app)
 
+    # Health check root route
+    @app.route('/')
+    def index():
+        return 'Backend is running', 200
+
     # Import User model inside app context for migration
     with app.app_context():
-        from app.backend.models.user import User
+        from .models.user import User
 
     return app
 
