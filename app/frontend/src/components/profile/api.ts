@@ -1,24 +1,51 @@
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://127.0.0.1:5000/api/profile';
 
-export const profileApi = {
-  getProfile: async () => {
-    const response = await fetch(`${API_URL}/profile`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    return response.json();
-  },
+export async function fetchProfile() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(API_URL, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to fetch profile');
+  return res.json();
+}
 
-  updateProfile: async (profileData: any) => {
-    const response = await fetch(`${API_URL}/profile`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify(profileData),
-    });
-    return response.json();
-  },
-}; 
+export async function updateProfile(data: any) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(API_URL, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to update profile');
+  return res.json();
+}
+
+export async function uploadAvatar(file: File) {
+  const token = localStorage.getItem('token');
+  const formData = new FormData();
+  formData.append('image', file);
+  const res = await fetch('http://127.0.0.1:5000/api/profile/image', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: formData,
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    let errorMsg = 'Failed to upload avatar';
+    try {
+      const err = await res.json();
+      errorMsg = err.error || errorMsg;
+    } catch {}
+    throw new Error(errorMsg);
+  }
+  return res.json();
+} 

@@ -1,9 +1,9 @@
-const API_URL = 'http://localhost:5000';
+const API_BASE_URL = "http://127.0.0.1:5001/api";
 
 export const api = {
   // Auth endpoints
   login: async (credentials: { email: string; password: string }) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
@@ -12,7 +12,7 @@ export const api = {
   },
 
   signup: async (userData: { email: string; password: string; name: string }) => {
-    const response = await fetch(`${API_URL}/auth/signup`, {
+    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -22,7 +22,7 @@ export const api = {
 
   // Profile endpoints
   getProfile: async () => {
-    const response = await fetch(`${API_URL}/profile`, {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
@@ -31,7 +31,7 @@ export const api = {
   },
 
   updateProfile: async (profileData: any) => {
-    const response = await fetch(`${API_URL}/profile`, {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

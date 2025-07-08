@@ -5,15 +5,13 @@ from flask_jwt_extended import create_access_token
 from passlib.hash import bcrypt
 import re
 from sqlalchemy.exc import IntegrityError
-from flask_cors import cross_origin
 
 auth_bp = Blueprint('auth', __name__)
 
 # Password complexity regex: min 8 chars, 1 upper, 1 lower, 1 digit, 1 special
 PASSWORD_REGEX = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
 
-@auth_bp.route('/signup', methods=['POST', 'OPTIONS'])
-@cross_origin()
+@auth_bp.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     username = str(data.get('username', '')).strip()
@@ -39,8 +37,7 @@ def signup():
         return jsonify({'msg': 'Username or email already exists'}), 400
     return jsonify({'msg': 'User created'}), 201
 
-@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
-@cross_origin()
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     identifier = str(data.get('username', '') or data.get('email', '')).strip().lower()
@@ -65,7 +62,7 @@ def login():
     if not user or not password_check:
         print('  Login failed: Invalid username/email or password')
         return jsonify({'msg': 'Invalid username/email or password'}), 401
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
     print('  Login successful!')
     return jsonify({'access_token': access_token, 'user': {'id': user.id, 'username': user.username, 'email': user.email}}), 200
 

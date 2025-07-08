@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiUser, FiLock } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from './api';
 
 const Login: React.FC = () => {
@@ -9,6 +9,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +24,8 @@ const Login: React.FC = () => {
       const result = await loginUser(payload);
       if (result && (result.token || result.access_token)) {
         setSuccess(true);
-        // Optionally, save token to localStorage or context here
+        localStorage.setItem('token', result.token || result.access_token);
+        navigate('/profile');
       } else {
         setError(result?.message || result?.msg || 'Invalid credentials');
       }
@@ -45,7 +47,8 @@ const Login: React.FC = () => {
               </span>
               <input
                 type="text"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black bg-white placeholder-gray-400 transition-all shadow-sm hover:shadow-md"
+                style={{ color: 'black' }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black dark:text-black bg-white placeholder-gray-400 transition-all shadow-sm hover:shadow-md"
                 placeholder="Username or Email"
                 value={identifier}
                 onChange={e => setIdentifier(e.target.value)}
@@ -59,7 +62,8 @@ const Login: React.FC = () => {
               </span>
               <input
                 type="password"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black bg-white placeholder-gray-400 transition-all shadow-sm hover:shadow-md"
+                style={{ color: 'black' }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black dark:text-black bg-white placeholder-gray-400 transition-all shadow-sm hover:shadow-md"
                 placeholder="Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
