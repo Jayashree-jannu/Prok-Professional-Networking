@@ -1,32 +1,65 @@
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from .config import Config
-from .extensions import db, migrate, jwt, limiter
-from .api import register_blueprints
+from app.backend.config import Config
+from app.backend.extensions import db, migrate, jwt, limiter
+from app.backend.api import register_blueprints
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # Debug: print JWT config
+    print('DEBUG: JWT_SECRET_KEY:', app.config.get('JWT_SECRET_KEY'))
+    print('DEBUG: JWT_ACCESS_TOKEN_EXPIRES:', app.config.get('JWT_ACCESS_TOKEN_EXPIRES'))
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     limiter.init_app(app)
-    # Allow CORS for all local frontend ports (5173, 5174, 5175) and wildcard for dev
+    # Allow CORS for all local frontend ports (5173, 5174, 5175, 5176, 5177, 5178) and wildcard for dev
     CORS(app, supports_credentials=True, origins=[
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
+        "http://localhost:5176",
+        "http://localhost:5177",
+        "http://localhost:5178",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
-        "http://127.0.0.1:5175"
+        "http://127.0.0.1:5175",
+        "http://127.0.0.1:5176",
+        "http://127.0.0.1:5177",
+        "http://127.0.0.1:5178"
     ])
 
     # Register blueprints
     register_blueprints(app)
+
+    # JWT error handler for debugging
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        import traceback
+        print('DEBUG: Global Exception:', e)
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'type': type(e).__name__}), 500
+
+    # JWT-specific error handlers
+    from flask_jwt_extended.exceptions import NoAuthorizationError, InvalidHeaderError, WrongTokenError, RevokedTokenError, FreshTokenRequired, CSRFError, UserLookupError, UserClaimsVerificationError
+    from flask_jwt_extended import JWTManager
+    @app.errorhandler(NoAuthorizationError)
+    @app.errorhandler(InvalidHeaderError)
+    @app.errorhandler(WrongTokenError)
+    @app.errorhandler(RevokedTokenError)
+    @app.errorhandler(FreshTokenRequired)
+    @app.errorhandler(CSRFError)
+    @app.errorhandler(UserLookupError)
+    @app.errorhandler(UserClaimsVerificationError)
+    def handle_jwt_errors(e):
+        print('DEBUG: JWT Error:', e)
+        return jsonify({'error': str(e), 'type': type(e).__name__}), 401
 
     # Health check root route
     @app.route('/')
@@ -35,7 +68,7 @@ def create_app(config_class=Config):
 
     # Import User model inside app context for migration
     with app.app_context():
-        from .models.user import User
+        from app.backend.models.user import User
         db.create_all()
 
     # Serve profile images from the root URL

@@ -35,6 +35,12 @@ const Login: React.FC = () => {
     setLoading(false);
   };
 
+  // Add logout button for user to clear token and refresh authentication
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-100">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-2xl border border-gray-100">
@@ -85,6 +91,12 @@ const Login: React.FC = () => {
           Don't have an account?{' '}
           <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
         </div>
+        <button
+          onClick={handleLogout}
+          className="w-full mt-4 py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+        >
+          Logout (Clear Token)
+        </button>
       </div>
     </div>
   );

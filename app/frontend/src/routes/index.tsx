@@ -1,49 +1,84 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Login from '../components/auth/Login';
 import Signup from '../components/auth/Signup';
 import ProfileView from '../components/profile/ProfileView';
 import ProfileEdit from '../components/profile/ProfileEdit';
-import PostCreate from '../components/posts/PostCreate';
-import PostList from '../components/posts/PostList';
 import Feed from '../components/feed/Feed';
 import JobList from '../components/job-board/JobList';
 import MessageList from '../components/messaging/MessageList';
 
-export const router = createBrowserRouter([
+function RequireAuth({ children }: { children: JSX.Element }) {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" />;
+}
+
+function ErrorFallback() {
+  return (
+    <div style={{ padding: 40, textAlign: 'center' }}>
+      <h1>Something went wrong!</h1>
+      <p>Sorry, an unexpected error occurred. Please try again or contact support.</p>
+      <button onClick={() => window.location.reload()}>Reload Page</button>
+    </div>
+  );
+}
+
+// @ts-ignore: v7_startTransition is a valid runtime flag in react-router-dom v7, but types may lag behind
+const router = createBrowserRouter([
   {
     path: '/',
-    element: <Login />,
+    element: (
+      <RequireAuth>
+        <Feed />
+      </RequireAuth>
+    ),
+    errorElement: <ErrorFallback />,
   },
   {
     path: '/login',
     element: <Login />,
+    errorElement: <ErrorFallback />,
   },
   {
     path: '/signup',
     element: <Signup />,
+    errorElement: <ErrorFallback />,
   },
   {
     path: '/profile',
-    element: <ProfileView />,
+    element: (
+      <RequireAuth>
+        <ProfileView />
+      </RequireAuth>
+    ),
+    errorElement: <ErrorFallback />,
   },
   {
     path: '/profile/edit',
-    element: <ProfileEdit />,
-  },
-  {
-    path: '/posts/create',
-    element: <PostCreate />,
-  },
-  {
-    path: '/posts',
-    element: <PostList />,
+    element: (
+      <RequireAuth>
+        <ProfileEdit />
+      </RequireAuth>
+    ),
+    errorElement: <ErrorFallback />,
   },
   {
     path: '/jobs',
-    element: <JobList />,
+    element: (
+      <RequireAuth>
+        <JobList />
+      </RequireAuth>
+    ),
+    errorElement: <ErrorFallback />,
   },
   {
     path: '/messages',
-    element: <MessageList />,
+    element: (
+      <RequireAuth>
+        <MessageList />
+      </RequireAuth>
+    ),
+    errorElement: <ErrorFallback />,
   },
-]); 
+]);
+
+export default router; 
