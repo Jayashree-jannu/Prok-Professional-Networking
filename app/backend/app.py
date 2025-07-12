@@ -1,9 +1,9 @@
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from app.backend.config import Config
-from app.backend.extensions import db, migrate, jwt, limiter
-from app.backend.api import register_blueprints
+from config import Config
+from extensions import db, migrate, jwt, limiter
+from api import register_blueprints
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 def create_app(config_class=Config):
@@ -19,20 +19,10 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     jwt.init_app(app)
     limiter.init_app(app)
-    # Allow CORS for all local frontend ports (5173, 5174, 5175, 5176, 5177, 5178) and wildcard for dev
+    # Allow CORS for all local frontend ports (any port on localhost/127.0.0.1)
     CORS(app, supports_credentials=True, origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "http://localhost:5176",
-        "http://localhost:5177",
-        "http://localhost:5178",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-        "http://127.0.0.1:5175",
-        "http://127.0.0.1:5176",
-        "http://127.0.0.1:5177",
-        "http://127.0.0.1:5178"
+        r"http://localhost:\d+",
+        r"http://127.0.0.1:\d+"
     ])
 
     # Register blueprints
@@ -68,7 +58,7 @@ def create_app(config_class=Config):
 
     # Import User model inside app context for migration
     with app.app_context():
-        from app.backend.models.user import User
+        from models.user import User
         db.create_all()
 
     # Serve profile images from the root URL

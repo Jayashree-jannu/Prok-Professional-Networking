@@ -1,4 +1,4 @@
-const API_URL = 'http://127.0.0.1:5001/api/profile';
+const API_URL = 'http://127.0.0.1:5000/api/profile';
 
 export async function fetchProfile() {
   const token = localStorage.getItem('token');
@@ -31,7 +31,7 @@ export async function uploadAvatar(file: File) {
   const token = localStorage.getItem('token');
   const formData = new FormData();
   formData.append('image', file);
-  const res = await fetch('http://127.0.0.1:5001/api/profile/image', {
+  const res = await fetch('http://127.0.0.1:5000/api/profile/image', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,

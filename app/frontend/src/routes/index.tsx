@@ -6,6 +6,9 @@ import ProfileEdit from '../components/profile/ProfileEdit';
 import Feed from '../components/feed/Feed';
 import JobList from '../components/job-board/JobList';
 import MessageList from '../components/messaging/MessageList';
+import PostList from '../components/posts/PostList';
+import PostCreate from '../components/posts/PostCreate';
+import Layout from '../components/navigation/Layout';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem('token');
@@ -28,10 +31,19 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <RequireAuth>
-        <Feed />
+        <Layout />
       </RequireAuth>
     ),
     errorElement: <ErrorFallback />,
+    children: [
+      { path: '/', element: <Feed /> },
+      { path: '/profile', element: <ProfileView /> },
+      { path: '/profile/edit', element: <ProfileEdit /> },
+      { path: '/jobs', element: <JobList /> },
+      { path: '/messages', element: <MessageList /> },
+      { path: '/posts', element: <PostList /> },
+      { path: '/posts/create', element: <PostCreate /> },
+    ],
   },
   {
     path: '/login',
@@ -43,42 +55,6 @@ const router = createBrowserRouter([
     element: <Signup />,
     errorElement: <ErrorFallback />,
   },
-  {
-    path: '/profile',
-    element: (
-      <RequireAuth>
-        <ProfileView />
-      </RequireAuth>
-    ),
-    errorElement: <ErrorFallback />,
-  },
-  {
-    path: '/profile/edit',
-    element: (
-      <RequireAuth>
-        <ProfileEdit />
-      </RequireAuth>
-    ),
-    errorElement: <ErrorFallback />,
-  },
-  {
-    path: '/jobs',
-    element: (
-      <RequireAuth>
-        <JobList />
-      </RequireAuth>
-    ),
-    errorElement: <ErrorFallback />,
-  },
-  {
-    path: '/messages',
-    element: (
-      <RequireAuth>
-        <MessageList />
-      </RequireAuth>
-    ),
-    errorElement: <ErrorFallback />,
-  },
-]);
+]); 
 
-export default router; 
+export { router }; 

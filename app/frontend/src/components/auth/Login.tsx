@@ -87,7 +87,7 @@ const Login: React.FC = () => {
           {error && <div className="text-red-500 text-center text-sm mt-2 animate-pulse">{error}</div>}
           {success && <div className="text-green-600 text-center text-sm mt-2 animate-bounce">Login successful!</div>}
         </form>
-        <div className="text-center text-sm mt-4">
+        <div className="text-center text-sm mt-4 text-black">
           Don't have an account?{' '}
           <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
         </div>
@@ -96,6 +96,33 @@ const Login: React.FC = () => {
           className="w-full mt-4 py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
         >
           Logout (Clear Token)
+        </button>
+        
+        {/* Auto-login button for testing */}
+        <button
+          onClick={() => {
+            setIdentifier('testuser4');
+            setPassword('Password123!');
+            setTimeout(() => {
+              const form = document.querySelector('form');
+              if (form) form.dispatchEvent(new Event('submit', { bubbles: true }));
+            }, 100);
+          }}
+          className="w-full mt-2 py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+        >
+          Auto Login (Test User)
+        </button>
+        
+        {/* Direct login button */}
+        <button
+          onClick={() => {
+            // Set token directly and redirect
+            localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MjMwNzYwNCwianRpIjoiMmJmZGQzYzYtNmIzYy00YmEzLTg2OGYtNjFhZWEyODJmODRmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYiLCJuYmYiOjE3NTIzMDc2MDQsImV4cCI6MTc1MjMxMTIwNH0.LXmOwhuDtoqEF3a6fGS5V-4eNB2D9Rv-EkyOfG7yKSM');
+            window.location.href = '/profile';
+          }}
+          className="w-full mt-2 py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          Direct Login (Skip Form)
         </button>
       </div>
     </div>

@@ -6,7 +6,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface PostCreateProps {
   onPostCreated?: () => void;
@@ -195,8 +195,8 @@ const PostCreate: React.FC<PostCreateProps> = ({ onPostCreated }) => {
             <label className="block text-sm font-semibold mb-1 text-black">Content</label>
             <ReactQuill
               theme="snow"
-              value={content}
-              onChange={handleContentChange}
+            value={content}
+            onChange={handleContentChange}
               className="bg-white text-black rounded"
               placeholder="What's on your mind?"
               readOnly={loading}
@@ -232,11 +232,11 @@ const PostCreate: React.FC<PostCreateProps> = ({ onPostCreated }) => {
                   <p className="text-xs text-black">Supports images and videos up to 10MB</p>
                 </>
               )}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/gif,video/mp4,video/webm"
-                onChange={handleMediaChange}
-                disabled={loading}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/gif,video/mp4,video/webm"
+            onChange={handleMediaChange}
+            disabled={loading}
                 className="hidden"
                 ref={fileInputRef}
               />
@@ -270,6 +270,22 @@ const PostCreate: React.FC<PostCreateProps> = ({ onPostCreated }) => {
           </div>
           {error && <div className="text-red-500 mb-2">{error}</div>}
           {success && <div className="text-green-600 mb-2">{success}</div>}
+          
+          {/* Quick login button for testing */}
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-sm text-yellow-800 mb-2">Need to login? Use this test account:</p>
+            <button
+              type="button"
+              className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600"
+              onClick={() => {
+                localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MjMyNDMzMiwianRpIjoiY2MwZmVjYTAtZmJkNi00YzRlLTgxZWQtNmRjNjFjMGQwYWUwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTIzMjQzMzIsImV4cCI6MTc1MjMyNzkzMn0.b5CDMjuBGQKkXMpgb347RYnZib_NM2EaEoCgMVU9nK0');
+                setSuccess('Token updated! Try creating a post now.');
+                setTimeout(() => setSuccess(null), 3000);
+              }}
+            >
+              Login with Test Account
+            </button>
+          </div>
         </form>
         {showPreview && (
           <div className="mt-8 p-4 border rounded bg-gray-50">
@@ -301,14 +317,14 @@ const PostCreate: React.FC<PostCreateProps> = ({ onPostCreated }) => {
         >
           <span className="text-black">Preview</span>
         </button>
-        <button
-          type="submit"
+          <button
+            type="submit"
           form="create-post-form"
           className="flex-1 py-3 bg-blue-600 text-white font-semibold"
-          disabled={loading}
-        >
+            disabled={loading}
+          >
           <span className="text-black">{loading ? 'Posting...' : 'Post'}</span>
-        </button>
+          </button>
       </div>
     </div>
   );
