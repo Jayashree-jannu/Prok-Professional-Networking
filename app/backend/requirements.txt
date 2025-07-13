@@ -10,4 +10,6 @@ black==23.7.0
 flake8==6.1.0
 flask-migrate
 Flask-Limiter
-passlib 
+passlib
+gunicorn==21.2.0
+psycopg2-binary==2.9.9 

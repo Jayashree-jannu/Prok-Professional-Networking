@@ -4,7 +4,7 @@ import { useDebounce } from './useDebounce';
 import { useInfiniteScroll } from './useInfiniteScroll';
 import { FiMoreHorizontal, FiHeart, FiMessageCircle, FiShare2, FiUser } from 'react-icons/fi';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 interface Post {
   id: number;

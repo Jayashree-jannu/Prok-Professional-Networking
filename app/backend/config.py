@@ -7,13 +7,11 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev')
     
     # Database
-    MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
-    MYSQL_PASSWORD = quote_plus(os.environ.get('MYSQL_PASSWORD', 'jayashree2901'))
-    MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
-    MYSQL_DB = os.environ.get('MYSQL_DB', 'prok_db')
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DB}"
-    )
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL or 'mysql://root:jayashree2901@localhost/prok_db?charset=utf8mb4'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # JWT

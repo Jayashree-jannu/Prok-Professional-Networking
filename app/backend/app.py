@@ -19,11 +19,15 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     jwt.init_app(app)
     limiter.init_app(app)
-    # Allow CORS for all local frontend ports (any port on localhost/127.0.0.1)
-    CORS(app, supports_credentials=True, origins=[
-        r"http://localhost:\d+",
-        r"http://127.0.0.1:\d+"
-    ])
+    # CORS configuration
+    ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,https://your-frontend-url.onrender.com').split(',')
+    
+    CORS(app,
+         origins=ALLOWED_ORIGINS,
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+         allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
+         supports_credentials=True,
+         max_age=3600)
 
     # Register blueprints
     register_blueprints(app)
@@ -55,6 +59,15 @@ def create_app(config_class=Config):
     @app.route('/')
     def index():
         return 'Backend is running', 200
+    
+    # Test endpoint for deployment verification
+    @app.route('/api/test')
+    def test_api():
+        return jsonify({
+            'message': 'Backend API is working!',
+            'status': 'success',
+            'timestamp': '2024-01-01T00:00:00Z'
+        }), 200
 
     # Import User model inside app context for migration
     with app.app_context():

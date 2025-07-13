@@ -16,7 +16,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
   const [imgError, setImgError] = React.useState(false);
-  const BACKEND_URL = "http://127.0.0.1:5000";
+  const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const avatarUrl = !imgError && profile.avatar && profile.avatar !== ''
     ? (profile.avatar.startsWith('http') ? profile.avatar : `${BACKEND_URL}${profile.avatar}${profile.avatar.includes('?') ? '&t=' + Date.now() : '?t=' + Date.now()}`)
     : 'https://randomuser.me/api/portraits/lego/1.jpg';
