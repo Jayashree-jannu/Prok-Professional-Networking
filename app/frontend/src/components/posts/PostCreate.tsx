@@ -134,7 +134,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ onPostCreated }) => {
       // Debug: print token and Authorization header
       console.log('DEBUG: token from localStorage:', token);
       console.log('DEBUG: Authorization header:', token ? `Bearer ${token}` : '');
-      const response = await axios.post(`${API_BASE_URL}/api/posts`, formData, {
+      await axios.post(`${API_BASE_URL}/api/posts`, formData, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'multipart/form-data',
@@ -270,22 +270,6 @@ const PostCreate: React.FC<PostCreateProps> = ({ onPostCreated }) => {
           </div>
           {error && <div className="text-red-500 mb-2">{error}</div>}
           {success && <div className="text-green-600 mb-2">{success}</div>}
-          
-          {/* Quick login button for testing */}
-          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-            <p className="text-sm text-yellow-800 mb-2">Need to login? Use this test account:</p>
-            <button
-              type="button"
-              className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600"
-              onClick={() => {
-                localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MjMyNDMzMiwianRpIjoiY2MwZmVjYTAtZmJkNi00YzRlLTgxZWQtNmRjNjFjMGQwYWUwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTIzMjQzMzIsImV4cCI6MTc1MjMyNzkzMn0.b5CDMjuBGQKkXMpgb347RYnZib_NM2EaEoCgMVU9nK0');
-                setSuccess('Token updated! Try creating a post now.');
-                setTimeout(() => setSuccess(null), 3000);
-              }}
-            >
-              Login with Test Account
-            </button>
-          </div>
         </form>
         {showPreview && (
           <div className="mt-8 p-4 border rounded bg-gray-50">
