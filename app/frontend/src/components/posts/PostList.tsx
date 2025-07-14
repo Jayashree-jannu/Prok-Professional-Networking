@@ -24,7 +24,6 @@ interface Post {
   };
 }
 
-const categories = ['All', 'Tech', 'Business', 'Art', 'Science']; // Placeholder, should fetch from API
 const visibilities = ['All', 'Public', 'Private', 'Connections'];
 const sortOptions = [
   { value: 'created_at', label: 'Newest' },
@@ -319,23 +318,4 @@ export default function PostList() {
       </div>
     </div>
   );
-}
-
-// LazyImage component using Intersection Observer
-function LazyImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  const [show, setShow] = useState(false);
-  const imgRef = React.useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    const observer = new window.IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        setShow(true);
-        observer.disconnect();
-      }
-    });
-    if (imgRef.current) observer.observe(imgRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return show ? <img ref={imgRef} src={src} alt={alt} className={className} /> : <div ref={imgRef} className={className + ' bg-gray-200'} />;
 } 
