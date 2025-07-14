@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: prok-backend
+    env: python
+    rootDir: app/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      # Add your other environment variables here, e.g. DATABASE_URL, SECRET_KEY, JWT_SECRET_KEY, ALLOWED_ORIGINS 
