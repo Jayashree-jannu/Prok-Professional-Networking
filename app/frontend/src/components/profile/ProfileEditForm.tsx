@@ -42,10 +42,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ profile, onSave, onCa
 
   // --- State for UI feedback ---
   const [touched, setTouched] = useState<any>({});
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number | undefined>(undefined);
   const [avatarUrl, setAvatarUrl] = useState<string>(profile.avatar || '');
-  const [avatarError, setAvatarError] = useState<string | null>(null);
 
   // --- Validation logic ---
   // TODO: Extend validation for new fields as needed
@@ -79,27 +76,20 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ profile, onSave, onCa
   const handleImageChange = async (file: File | null) => {
     setForm((f) => ({ ...f, avatar: file }));
     setTouched((t: any) => ({ ...t, avatar: true }));
-    setAvatarError(null);
     if (file) {
-      setUploadProgress(0);
       try {
         let progress = 0;
         const interval = setInterval(() => {
           progress += 20;
-          setUploadProgress(progress);
           if (progress >= 100) clearInterval(interval);
         }, 200);
         // Use onAvatarUpload prop
         const newAvatarUrl = await onAvatarUpload(file);
         setAvatarUrl(newAvatarUrl);
         setForm((f) => ({ ...f, avatar: null }));
-        setUploadProgress(100);
       } catch (err) {
-        setAvatarError('Failed to upload avatar');
-        setUploadProgress(undefined);
+        // Handle error
       }
-    } else {
-      setUploadProgress(undefined);
     }
   };
 
@@ -150,10 +140,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ profile, onSave, onCa
       social: form.social,
       education: education,
     });
-    setTimeout(() => {
-      setSubmitSuccess(true);
-      setTimeout(() => setSubmitSuccess(false), 2000);
-    }, 1200);
   };
 
   // --- Render form ---
