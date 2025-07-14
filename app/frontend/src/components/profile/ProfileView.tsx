@@ -17,7 +17,7 @@ const ProfileView: React.FC = () => {
         setProfile(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch(() => {
         setError('Failed to load profile');
         setLoading(false);
       });
