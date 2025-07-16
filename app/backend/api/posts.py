@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from collections import Counter
 import time
+from flask_cors import cross_origin
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'avi'}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
@@ -152,6 +153,7 @@ def get_popular_tags():
 # Serve media files
 def register_media_route(app):
     @app.route('/post_media/<filename>')
+    @cross_origin(origins=["https://prok-frontend-lelx.onrender.com", "http://localhost:5173"])  # Add your frontend origins here
     def serve_post_media(filename):
         folder = os.path.join(os.path.dirname(__file__), '..', 'post_media')
         return send_from_directory(folder, filename)
